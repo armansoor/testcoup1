@@ -17,10 +17,13 @@
             <div class="control-group">
                 <label>Human Players:</label>
                 <select id="human-count">
-                    <option value="1">1 (Solo)</option>
+                    <option value="0">0 (Spectator/Learn)</option>
+                    <option value="1" selected>1 (Solo)</option>
                     <option value="2">2 (Pass & Play)</option>
                     <option value="3">3 (Pass & Play)</option>
                     <option value="4">4 (Pass & Play)</option>
+                    <option value="5">5 (Pass & Play)</option>
+                    <option value="6">6 (Pass & Play)</option>
                 </select>
             </div>
             
@@ -28,9 +31,12 @@
                 <label>AI Opponents:</label>
                 <select id="ai-count">
                     <option value="0">0</option>
-                    <option value="1">1</option>
+                    <option value="1" selected>1</option>
                     <option value="2">2</option>
-                    <option value="3" selected>3</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
                 </select>
             </div>
 
@@ -107,7 +113,14 @@
         </div>
     </div>
 
+    <div id="message-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2 id="message-title">Message</h2>
+            <p id="message-text">...</p>
+            <button onclick="closeMessage()">OK</button>
+        </div>
+    </div>
+
     <script src="script.js"></script>
 </body>
   </html>
-  
