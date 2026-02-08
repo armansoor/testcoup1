@@ -300,14 +300,6 @@ async function killInfluence(p) {
             await showMessage("Eliminated!", `${p.name} lost their last card: ${p.cards[aliveIndices[0]].role}`);
             p.loseCard(aliveIndices[0]);
         } else {
-            // Let them see the log before prompting
-            // await showMessage("Challenge Lost!", "Choose a card to lose."); // Optional, but let's stick to prompt for now as it wasn't the main complaint.
-            // But requirement 4 says "Player 1 dies... needs to observe".
-            // If they have 2 cards, they don't die yet. So standard prompt is ok?
-            // "Before he was assassinated the player needs to observe why he was dead."
-            // This applies when they are about to be ELIMINATED (die).
-            // If they have 2 cards, they are not dying.
-            // So prompt is fine.
             let choice = prompt(`${p.name} lost a challenge! Choose card to lose:\n1. ${p.cards[0].role}\n2. ${p.cards[1].role}`);
             if (choice === '2' && !p.cards[1].dead) p.loseCard(1);
             else p.loseCard(0);
@@ -355,8 +347,20 @@ async function applyEffect() {
 function nextTurn() {
     const alive = gameState.players.filter(p => p.alive);
     if (alive.length === 1) {
-        showMessage("Game Over", `${alive[0].name} WINS!`);
-        // Do not reload. User can close message and view logs.
+        const winner = alive[0];
+        const human = gameState.players.find(p => !p.isAI);
+
+        let msg = `${winner.name} WINS!`;
+        if (human) {
+            if (winner.id === human.id) {
+                msg = "YOU WON! " + msg;
+            } else {
+                msg = "YOU LOST! " + msg;
+            }
+        }
+
+        log(`GAME OVER. ${msg}`, 'important');
+        showMessage("Game Over", msg);
         return;
     }
 
@@ -389,6 +393,20 @@ function showMessage(title, text) {
 
 function closeMessage() {
     document.getElementById('message-modal').classList.add('hidden');
+}
+
+function downloadLog() {
+    const entries = document.querySelectorAll('.log-entry');
+    let text = "";
+    entries.forEach(e => text += e.innerText + "\n");
+
+    const blob = new Blob([text], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `coup_log_${new Date().getTime()}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
 }
 
 function aiShouldChallenge(ai, actionObj) {

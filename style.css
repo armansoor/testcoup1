@@ -48,7 +48,24 @@ button.red { background: #800; }
 #player-area { background: #151515; padding: 15px; border-top: 2px solid var(--accent); min-height: 300px; display: flex; flex-direction: column; align-items: center; }
 .coins-display { font-size: 1.2rem; margin-bottom: 10px; }
 .cards-container { display: flex; justify-content: center; gap: 10px; margin: 10px 0; }
-.player-card { width: 80px; height: 110px; background: #e0e0e0; color: #000; display: flex; flex-direction: column; justify-content: center; align-items: center; border-radius: 5px; font-weight: bold; cursor: pointer; border: 3px solid transparent; }
+.player-card {
+    width: 90px;
+    height: 110px;
+    background: #e0e0e0;
+    color: #000;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    border: 3px solid transparent;
+    font-size: 0.85rem;
+    word-break: break-all;
+    text-align: center;
+    overflow: hidden;
+}
 .player-card.dead { opacity: 0.5; text-decoration: line-through; background: #555; }
 
 /* ACTIONS & REACTION */
