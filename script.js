@@ -94,6 +94,16 @@ function startGame() {
     const aiCount = parseInt(document.getElementById('ai-count').value);
     const diff = document.getElementById('difficulty').value;
 
+    const totalPlayers = humanCount + aiCount;
+    if (totalPlayers < 2) {
+        showMessage("Setup Error", "You need at least 2 players to start the game.");
+        return;
+    }
+    if (totalPlayers > 6) {
+        showMessage("Setup Error", "Maximum 6 players allowed.");
+        return;
+    }
+
     gameState.players = [];
     gameState.deck = [];
     gameState.log = []; 
@@ -142,7 +152,7 @@ function playTurn() {
 
 function submitAction(type) {
     const p = getCurrentPlayer();
-    if (ACTIONS[type].cost > p.coins) { alert("Need more coins!"); return; }
+    if (ACTIONS[type].cost > p.coins) { showMessage("Error", "Need more coins!"); return; }
 
     let target = null;
     if (['Coup', 'Assassinate', 'Steal'].includes(type)) {
@@ -242,7 +252,7 @@ async function processReactions() {
     }
 
     // 3. Apply Effect
-    applyEffect();
+    await applyEffect();
 }
 
 // --- RESOLUTION ---
@@ -262,7 +272,7 @@ async function resolveChallenge(suspect, challenger, role) {
         gameState.deck.push({role: role, dead: false});
         shuffle(gameState.deck);
         
-        if (suspect.id === gameState.currentAction.player.id) applyEffect();
+        if (suspect.id === gameState.currentAction.player.id) await applyEffect();
         else nextTurn(); 
 
     } else {
@@ -271,7 +281,7 @@ async function resolveChallenge(suspect, challenger, role) {
         await killInfluence(suspect);
         
         if (suspect.id === gameState.currentAction.player.id) nextTurn();
-        else applyEffect();
+        else await applyEffect();
     }
 }
 
@@ -287,9 +297,17 @@ async function killInfluence(p) {
         if (aliveIndices.length === 0) return;
         
         if (aliveIndices.length === 1) {
-            alert(`${p.name} lost last card!`);
+            await showMessage("Eliminated!", `${p.name} lost their last card: ${p.cards[aliveIndices[0]].role}`);
             p.loseCard(aliveIndices[0]);
         } else {
+            // Let them see the log before prompting
+            // await showMessage("Challenge Lost!", "Choose a card to lose."); // Optional, but let's stick to prompt for now as it wasn't the main complaint.
+            // But requirement 4 says "Player 1 dies... needs to observe".
+            // If they have 2 cards, they don't die yet. So standard prompt is ok?
+            // "Before he was assassinated the player needs to observe why he was dead."
+            // This applies when they are about to be ELIMINATED (die).
+            // If they have 2 cards, they are not dying.
+            // So prompt is fine.
             let choice = prompt(`${p.name} lost a challenge! Choose card to lose:\n1. ${p.cards[0].role}\n2. ${p.cards[1].role}`);
             if (choice === '2' && !p.cards[1].dead) p.loseCard(1);
             else p.loseCard(0);
@@ -297,7 +315,7 @@ async function killInfluence(p) {
     }
 }
 
-function applyEffect() {
+async function applyEffect() {
     const act = gameState.currentAction;
     const p = act.player;
     const t = act.target;
@@ -318,11 +336,11 @@ function applyEffect() {
             break;
         case 'Assassinate':
             log(`${t.name} Assassinated!`, 'bad');
-            killInfluence(t);
+            await killInfluence(t);
             break;
         case 'Coup':
             log(`${t.name} Couped!`, 'bad');
-            killInfluence(t);
+            await killInfluence(t);
             break;
         case 'Exchange':
             log("Exchanged cards.");
@@ -337,8 +355,8 @@ function applyEffect() {
 function nextTurn() {
     const alive = gameState.players.filter(p => p.alive);
     if (alive.length === 1) {
-        alert(`${alive[0].name} WINS!`);
-        location.reload();
+        showMessage("Game Over", `${alive[0].name} WINS!`);
+        // Do not reload. User can close message and view logs.
         return;
     }
 
@@ -350,6 +368,29 @@ function nextTurn() {
 }
 
 // --- UTILS ---
+function showMessage(title, text) {
+    return new Promise(resolve => {
+        document.getElementById('message-title').innerText = title;
+        document.getElementById('message-text').innerText = text;
+        const modal = document.getElementById('message-modal');
+        modal.classList.remove('hidden');
+
+        const btn = modal.querySelector('button');
+        // Cloning to remove old event listeners
+        const newBtn = btn.cloneNode(true);
+        btn.parentNode.replaceChild(newBtn, btn);
+
+        newBtn.onclick = () => {
+            modal.classList.add('hidden');
+            resolve();
+        };
+    });
+}
+
+function closeMessage() {
+    document.getElementById('message-modal').classList.add('hidden');
+}
+
 function aiShouldChallenge(ai, actionObj) {
     if (ai.difficulty === 'hard') {
         const role = actionObj.role || ACTIONS[actionObj.type]?.role;
@@ -464,4 +505,3 @@ function log(m, t='') {
 }
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 function toggleRules() { document.getElementById('rules-modal').classList.toggle('hidden'); }
-      
