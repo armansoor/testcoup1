@@ -1,0 +1,71 @@
+:root {
+    --bg-color: #1a1a1a;
+    --text-color: #e0e0e0;
+    --accent: #d32f2f; /* Original Red */
+    --card-bg: #2c2c2c;
+    --highlight: #4caf50; /* Original Green */
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Roboto Mono', monospace; }
+
+body { background-color: var(--bg-color); color: var(--text-color); height: 100vh; overflow: hidden; }
+
+.screen { display: none; height: 100%; flex-direction: column; }
+.screen.active { display: flex; }
+
+/* LOBBY */
+#lobby-screen { justify-content: center; align-items: center; text-align: center; }
+h1 { font-size: 4rem; color: var(--accent); letter-spacing: 5px; margin-bottom: 0.5rem; }
+.subtitle { color: #888; margin-bottom: 2rem; }
+.setup-box { background: var(--card-bg); padding: 2rem; border-radius: 10px; border: 1px solid #444; width: 90%; max-width: 400px; }
+.control-group { margin-bottom: 1.5rem; text-align: left; }
+select { width: 100%; padding: 10px; background: #333; color: white; border: 1px solid #555; margin-top: 5px; }
+
+button { background: var(--accent); color: white; border: none; padding: 12px 20px; font-size: 1rem; cursor: pointer; width: 100%; margin-top: 10px; transition: 0.2s; }
+button:hover { opacity: 0.9; }
+button:disabled { background: #555; cursor: not-allowed; }
+button.secondary { background: transparent; border: 1px solid #555; }
+button.small-btn { width: auto; padding: 5px 10px; font-size: 0.8rem; }
+button.red { background: #800; }
+
+/* GAME BOARD */
+.game-header { display: flex; justify-content: space-between; padding: 10px; background: #000; align-items: center; }
+
+#game-log { flex: 1; overflow-y: auto; padding: 10px; border-bottom: 1px solid #444; font-size: 0.9rem; background: #111; }
+.log-entry { margin-bottom: 5px; }
+.log-entry.system { color: #888; font-style: italic; }
+.log-entry.important { color: var(--highlight); font-weight: bold; }
+.log-entry.bad { color: var(--accent); font-weight: bold; }
+
+/* OPPONENTS */
+#opponents-container { flex: 1; display: flex; justify-content: center; align-items: flex-start; padding: 10px; flex-wrap: wrap; background: #222; gap: 10px; }
+.opponent-card { background: var(--card-bg); padding: 10px; border-radius: 5px; text-align: center; border: 1px solid #444; min-width: 100px; }
+.opponent-card.active-turn { border-color: var(--highlight); box-shadow: 0 0 10px var(--highlight); }
+.opponent-card.dead { opacity: 0.5; }
+.card-back { display: inline-block; width: 30px; height: 40px; background: #555; margin: 2px; border: 1px solid #777; }
+
+/* PLAYER AREA */
+#player-area { background: #151515; padding: 15px; border-top: 2px solid var(--accent); min-height: 300px; display: flex; flex-direction: column; align-items: center; }
+.coins-display { font-size: 1.2rem; margin-bottom: 10px; }
+.cards-container { display: flex; justify-content: center; gap: 10px; margin: 10px 0; }
+.player-card { width: 80px; height: 110px; background: #e0e0e0; color: #000; display: flex; flex-direction: column; justify-content: center; align-items: center; border-radius: 5px; font-weight: bold; cursor: pointer; border: 3px solid transparent; }
+.player-card.dead { opacity: 0.5; text-decoration: line-through; background: #555; }
+
+/* ACTIONS & REACTION */
+#action-panel, #reaction-panel { width: 100%; max-width: 600px; text-align: center; }
+.action-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 8px; }
+#action-panel button { background: #333; border: 1px solid #555; }
+#action-panel button:hover:not(:disabled) { background: #444; border-color: #888; }
+
+/* REACTION SPECIFIC */
+#reaction-panel { padding: 15px; border: 1px solid var(--accent); background: #222; margin-top: 10px; }
+.btn-challenge { background: var(--accent) !important; }
+.btn-block { background: #555 !important; border: 1px solid #777 !important; }
+.btn-pass { background: var(--highlight) !important; color: #000 !important; }
+
+.hidden { display: none !important; }
+
+/* MODAL */
+.modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 100; display: flex; justify-content: center; align-items: center; }
+.modal-content { background: var(--card-bg); padding: 20px; max-width: 500px; border: 1px solid var(--accent); max-height: 90vh; overflow-y: auto; }
+.modal-content li { margin-bottom: 8px; margin-left: 20px; }
